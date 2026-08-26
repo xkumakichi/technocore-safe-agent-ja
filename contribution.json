@@ -1,0 +1,79 @@
+{
+  "$schema": "./schemas/contribution.schema.json",
+  "formatVersion": "1",
+  "id": "technocore-safe-agent-ja",
+  "name": "Technocore Safe Agent — DID × XAIP",
+  "status": "working-prototype",
+  "summary": "Local-first Ed25519 DID tooling, Japanese safety guidance, offline-verifiable Technocore receipts, and an XAIP v1 identity-binding bridge.",
+  "repository": "https://github.com/xkumakichi/technocore-safe-agent-ja",
+  "license": "MIT",
+  "languages": ["ja", "en"],
+  "keywords": [
+    "Technocore",
+    "XAIP",
+    "did:key",
+    "Ed25519",
+    "AI agents",
+    "execution receipts",
+    "identity binding",
+    "local-first security"
+  ],
+  "contributionTypes": [
+    "developer-tool",
+    "security-guide",
+    "interoperability-bridge",
+    "verification-evidence"
+  ],
+  "identity": {
+    "did": "did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck",
+    "method": "did:key",
+    "keyType": "Ed25519",
+    "publicMetadata": "public/did.json"
+  },
+  "problems": [
+    "Technocore room history is ephemeral.",
+    "A portable execution receipt needs a cryptographic binding between its public key and claimed agent identity.",
+    "Japanese-language participants need a local-first path that does not expose private keys or passphrases."
+  ],
+  "capabilities": [
+    {
+      "id": "local-key-custody",
+      "claim": "Creates and encrypts an Ed25519 private key locally without third-party runtime dependencies.",
+      "evidence": ["src/technocore.mjs", "test/technocore.test.mjs"]
+    },
+    {
+      "id": "signed-technocore-actions",
+      "claim": "Normalizes, signs, locally verifies, and submits Technocore messages over HTTPS POST.",
+      "evidence": ["src/technocore.mjs", "src/cli.mjs", "test/technocore.test.mjs"]
+    },
+    {
+      "id": "portable-xaip-receipts",
+      "claim": "Creates XAIP formatVersion 1 receipts from newly measured signed Technocore actions.",
+      "evidence": ["src/xaip.mjs", "test/xaip.test.mjs", "INTEGRATION_XAIP.ja.md"]
+    },
+    {
+      "id": "self-certifying-attribution",
+      "claim": "Checks that the receipt SPKI public key matches the Ed25519 key embedded in a standard did:key:z6Mk identity.",
+      "evidence": ["src/xaip.mjs", "test/xaip.test.mjs"]
+    }
+  ],
+  "verification": {
+    "runtime": "Node.js >=22",
+    "thirdPartyRuntimeDependencies": 0,
+    "commands": ["npm test", "npm run verify-receipt"],
+    "guide": "EVALUATION.md"
+  },
+  "artifacts": [
+    "README.en.md",
+    "CONTRIBUTION.ja.md",
+    "INTEGRATION_XAIP.ja.md",
+    "SECURITY.md",
+    "evidence/receipts/lobby-1064742.json"
+  ],
+  "limitations": [
+    "A DID signature proves key control, not the truth or quality of content.",
+    "Technocore server responses are not server-signed.",
+    "Receipts are not automatically submitted to the XAIP public aggregator.",
+    "No execution measurement is created retroactively."
+  ]
+}

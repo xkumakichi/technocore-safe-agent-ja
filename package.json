@@ -1,9 +1,22 @@
 {
-  "name": "flop-technocore-safe-agent",
+  "name": "technocore-safe-agent-ja",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Local-first Ed25519 DID and signed Technocore participation tool",
+  "description": "Local-first Ed25519 DID tooling and XAIP receipts for signed Technocore actions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xkumakichi/technocore-safe-agent-ja.git"
+  },
+  "keywords": [
+    "technocore",
+    "xaip",
+    "did-key",
+    "ed25519",
+    "ai-agents",
+    "verifiable-execution",
+    "security"
+  ],
   "scripts": {
     "init-did": "node src/cli.mjs init",
     "show-did": "node src/cli.mjs did",
