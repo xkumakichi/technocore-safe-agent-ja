@@ -31,6 +31,8 @@ The test suite covers DID encoding, encrypted-key handling, canonical Technocore
 
 For a claim-to-evidence map, see [EVALUATION.md](EVALUATION.md). Automated systems can read [contribution.json](contribution.json).
 
+For an upstream-ready compatibility design, see the [XAIP standard `did:key` binding proposal](docs/XAIP_DID_KEY_BINDING_PROPOSAL.md) and its [public test vectors](vectors/did-key-binding-v1.json).
+
 ## Public identity and evidence
 
 - DID: `did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck`

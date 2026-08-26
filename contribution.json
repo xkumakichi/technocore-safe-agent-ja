@@ -55,6 +55,15 @@
       "id": "self-certifying-attribution",
       "claim": "Checks that the receipt SPKI public key matches the Ed25519 key embedded in a standard did:key:z6Mk identity.",
       "evidence": ["src/xaip.mjs", "test/xaip.test.mjs"]
+    },
+    {
+      "id": "portable-did-key-vectors",
+      "claim": "Publishes valid and invalid standard did:key vectors for backward-compatible XAIP attribution work.",
+      "evidence": [
+        "vectors/did-key-binding-v1.json",
+        "test/did-key-binding-vector.test.mjs",
+        "docs/XAIP_DID_KEY_BINDING_PROPOSAL.md"
+      ]
     }
   ],
   "verification": {
@@ -68,6 +77,8 @@
     "CONTRIBUTION.ja.md",
     "INTEGRATION_XAIP.md",
     "INTEGRATION_XAIP.ja.md",
+    "docs/XAIP_DID_KEY_BINDING_PROPOSAL.md",
+    "vectors/did-key-binding-v1.json",
     "SECURITY.md",
     "evidence/receipts/lobby-1064742.json"
   ],

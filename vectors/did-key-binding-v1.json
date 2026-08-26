@@ -1,0 +1,38 @@
+{
+  "formatVersion": "1",
+  "purpose": "XAIP attribution test vectors for standard Ed25519 did:key public-key binding",
+  "valid": [
+    {
+      "id": "technocore-operational-public-key",
+      "did": "did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck",
+      "multibase": "z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck",
+      "decodedMulticodecHex": "ed01e96d58983256f20be4814426e7f8427806c2f24b3086a44471d1a674e23bda75",
+      "multicodecPrefixHex": "ed01",
+      "publicKeyRawHex": "e96d58983256f20be4814426e7f8427806c2f24b3086a44471d1a674e23bda75",
+      "publicKeySpkiDerHex": "302a300506032b6570032100e96d58983256f20be4814426e7f8427806c2f24b3086a44471d1a674e23bda75"
+    }
+  ],
+  "invalid": [
+    {
+      "id": "legacy-raw-hex-is-not-standard-did-key",
+      "did": "did:key:e96d58983256f20be4814426e7f8427806c2f24b3086a44471d1a674e23bda75",
+      "expectedFailure": "not-standard-multibase-multicodec"
+    },
+    {
+      "id": "unsupported-multicodec",
+      "did": "did:key:z6LSsPNs7S19e58LUmKHcjg4jwWYJZBk85pgr8D9GLpNyMc8",
+      "expectedFailure": "unsupported-multicodec"
+    },
+    {
+      "id": "invalid-ed25519-key-length",
+      "did": "did:key:z2DQYXh3Xtz2naHKvDQqfDGAoYgfMPQu5AGP8HdZmDVWwsf",
+      "expectedFailure": "invalid-key-length"
+    },
+    {
+      "id": "substituted-receipt-public-key",
+      "did": "did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck",
+      "publicKeySpkiDerHex": "302a300506032b6570032100e96d58983256f20be4814426e7f8427806c2f24b3086a44471d1a674e23bda74",
+      "expectedFailure": "public-key-binding-mismatch"
+    }
+  ]
+}

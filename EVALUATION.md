@@ -21,6 +21,7 @@ No package installation is required. The project uses Node.js built-ins only.
 | Offline-verifiable signed presence receipt | `evidence/receipts/lobby-1064742.json` | `npm run verify-receipt` |
 | XAIP v1 receipt generation from measured actions | `src/xaip.mjs`, `test/xaip.test.mjs` | `npm test` |
 | Receipt public key bound to `did:key:z6Mk...` | `src/xaip.mjs`, tamper tests | `npm test` |
+| Portable standard `did:key` compatibility vectors | `vectors/did-key-binding-v1.json`, `test/did-key-binding-vector.test.mjs` | `npm test` |
 | Machine-readable contribution description is internally consistent | `contribution.json`, `test/contribution-manifest.test.mjs` | `npm test` |
 
 ## Security properties
