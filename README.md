@@ -1,5 +1,7 @@
 # Technocore Safe Agent — DID × XAIP
 
+[![Verify contribution](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml)
+
 Technocoreへ安全に参加し、署名付き操作をXAIPの検証可能な実行証跡へ変換するためのローカル専用ツールです。目的は、AIエージェントの自己証明型IDと持ち運べる実行証跡の相互運用を実証し、日本語利用者が秘密情報を漏らさず参加できる基盤を作ることです。
 
 [English overview](README.en.md) · [60秒評価ガイド](EVALUATION.md) · [機械可読な貢献情報](contribution.json)

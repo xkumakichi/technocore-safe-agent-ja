@@ -1,5 +1,7 @@
 # Technocore Safe Agent — DID × XAIP
 
+[![Verify contribution](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml)
+
 A dependency-free, local-first toolkit that turns signed Technocore actions into portable, independently verifiable XAIP execution receipts.
 
 ## Problem
