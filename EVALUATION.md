@@ -22,6 +22,7 @@ No package installation is required. The project uses Node.js built-ins only.
 | XAIP v1 receipt generation from measured actions | `src/xaip.mjs`, `test/xaip.test.mjs` | `npm test` |
 | Receipt public key bound to `did:key:z6Mk...` | `src/xaip.mjs`, tamper tests | `npm test` |
 | Portable standard `did:key` compatibility vectors | `vectors/did-key-binding-v1.json`, `test/did-key-binding-vector.test.mjs` | `npm test` |
+| Supply-chain exposure is minimized and documented | `SUPPLY_CHAIN_SECURITY.md`, `package.json`, pinned `.github/workflows/ci.yml` | inspect files; `npm test` without install |
 | Machine-readable contribution description is internally consistent | `contribution.json`, `test/contribution-manifest.test.mjs` | `npm test` |
 
 ## Security properties

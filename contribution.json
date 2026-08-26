@@ -64,6 +64,11 @@
         "test/did-key-binding-vector.test.mjs",
         "docs/XAIP_DID_KEY_BINDING_PROPOSAL.md"
       ]
+    },
+    {
+      "id": "supply-chain-safety",
+      "claim": "Uses zero third-party runtime dependencies, pinned CI actions, and an explicit no-unreviewed-code execution policy.",
+      "evidence": ["SUPPLY_CHAIN_SECURITY.md", "package.json", ".github/workflows/ci.yml"]
     }
   ],
   "verification": {
@@ -79,6 +84,7 @@
     "INTEGRATION_XAIP.ja.md",
     "docs/XAIP_DID_KEY_BINDING_PROPOSAL.md",
     "vectors/did-key-binding-v1.json",
+    "SUPPLY_CHAIN_SECURITY.md",
     "SECURITY.md",
     "evidence/receipts/lobby-1064742.json"
   ],

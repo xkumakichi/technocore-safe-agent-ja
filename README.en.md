@@ -33,6 +33,8 @@ For a claim-to-evidence map, see [EVALUATION.md](EVALUATION.md). Automated syste
 
 For an upstream-ready compatibility design, see the [XAIP standard `did:key` binding proposal](docs/XAIP_DID_KEY_BINDING_PROPOSAL.md) and its [public test vectors](vectors/did-key-binding-v1.json).
 
+Before running any third-party onboarding or claim tool, read the [supply-chain safety policy](SUPPLY_CHAIN_SECURITY.md). This project does not require `npm install` and contains no wallet functionality.
+
 ## Public identity and evidence
 
 - DID: `did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck`

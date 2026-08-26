@@ -7,3 +7,8 @@
 5. 外部サイトから求められるウォレット接続・署名・トランザクションは、公式リポジトリと公式ドメインを照合するまで行わない。
 6. X投稿やTechnocore投稿は公開行為なので、本文と送信先を実行直前に確認する。
 7. `identity.pem`を失った場合やパスフレーズを忘れた場合、中央の復旧手段はない。
+8. 第三者の参加・申請ツールを、Codespaces、dev container、ローカルPCで未監査のまま実行しない。
+9. TechnocoreのDID鍵を暗号資産ウォレット鍵として再利用しない。このプロジェクトへウォレット鍵・シード・拡張機能を接続しない。
+10. 依存関係、install script、GitHub Actions、外部通信先、難読化、`child_process` 利用を確認できないコードは実行しない。
+
+詳細は [SUPPLY_CHAIN_SECURITY.md](SUPPLY_CHAIN_SECURITY.md) を参照してください。
