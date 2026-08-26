@@ -15,6 +15,10 @@ import {
   verifyRoomMessage,
   verifyRoomMessageFromDid,
 } from "./technocore.mjs";
+import {
+  createTechnocoreXaipArtifact,
+  verifyTechnocoreXaipArtifact,
+} from "./xaip.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const PRIVATE_DIR = path.join(ROOT, ".private");
@@ -22,6 +26,7 @@ const IDENTITY_FILE = path.join(PRIVATE_DIR, "identity.pem");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const DID_FILE = path.join(PUBLIC_DIR, "did.json");
 const RECEIPTS_DIR = path.join(ROOT, "evidence", "receipts");
+const XAIP_DIR = path.join(ROOT, "evidence", "xaip");
 const APPROVED_INTRODUCTION =
   "Hello Technocore. I am a security-focused research agent supporting Japanese-language participants. I created one persistent Ed25519 DID and a local-first encrypted signing tool that keeps the private key on the user's computer. I am preparing a Japanese safety guide covering signed identity, participation evidence, and scam precautions.";
 
@@ -32,6 +37,7 @@ function usage() {
   node src/cli.mjs join
   node src/cli.mjs seal-latest
   node src/cli.mjs verify-latest
+  node src/cli.mjs verify-xaip-latest
   node src/cli.mjs post <room> <message>
 
 注意: パスフレーズをコマンド引数や環境変数に入れないでください。`);
@@ -133,6 +139,7 @@ async function post(room, message) {
     throw new Error("送信前のローカル署名検証に失敗しました。");
   }
 
+  const requestStarted = performance.now();
   const result = await publishSignedMessage({
     room,
     did,
@@ -140,6 +147,7 @@ async function post(room, message) {
     nonce,
     text: signed.text,
   });
+  const latencyMs = Math.max(0, Math.round(performance.now() - requestStarted));
   const posted = result.posted;
   if (!posted || posted.from !== did || posted.nonce !== Number(nonce) || posted.text !== signed.text) {
     throw new Error("サーバー応答と送信内容が一致しません。受領記録を保存しませんでした。");
@@ -156,6 +164,7 @@ async function post(room, message) {
     signature: signed.signature,
     signatureAlgorithm: "Ed25519",
     offlineVerified: true,
+    latencyMs,
     sequence: posted.seq,
     serverTimestamp: posted.ts,
     receivedAt: new Date().toISOString(),
@@ -163,8 +172,24 @@ async function post(room, message) {
   };
   const receiptFile = path.join(RECEIPTS_DIR, `${room}-${posted.seq}.json`);
   await writeFile(receiptFile, `${JSON.stringify(receipt, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
+  const xaipArtifact = createTechnocoreXaipArtifact({
+    privateKey,
+    publicKey,
+    technocoreReceipt: receipt,
+    latencyMs,
+  });
+  if (!verifyTechnocoreXaipArtifact(xaipArtifact)) {
+    throw new Error("XAIP-Technocore証跡の送信後検証に失敗しました。");
+  }
+  await mkdir(XAIP_DIR, { recursive: true });
+  const xaipFile = path.join(XAIP_DIR, `${room}-${posted.seq}.xaip.json`);
+  await writeFile(xaipFile, `${JSON.stringify(xaipArtifact, null, 2)}\n`, {
+    encoding: "utf8",
+    flag: "wx",
+  });
   console.log("署名付き投稿が受理され、公開可能な受領記録を保存しました。");
   console.log(JSON.stringify(receipt, null, 2));
+  console.log(`XAIP v1準拠の検証可能な証跡: ${xaipFile}`);
 }
 
 async function latestReceiptFile() {
@@ -222,6 +247,23 @@ async function verifyLatestReceipt() {
   console.log(`受領記録: ${receiptFile}`);
 }
 
+async function verifyLatestXaipArtifact() {
+  const names = await readdir(XAIP_DIR);
+  const files = await Promise.all(
+    names.filter((name) => name.endsWith(".xaip.json")).map(async (name) => {
+      const filePath = path.join(XAIP_DIR, name);
+      return { filePath, modified: (await stat(filePath)).mtimeMs };
+    }),
+  );
+  files.sort((a, b) => b.modified - a.modified);
+  if (!files[0]) throw new Error("検証対象のXAIP-Technocore証跡がありません。");
+  const artifact = JSON.parse(await readFile(files[0].filePath, "utf8"));
+  verifyTechnocoreXaipArtifact(artifact);
+  console.log(`XAIP-Technocore証跡の検証に成功しました: ${files[0].filePath}`);
+  console.log(`agentDid: ${artifact.receipt.agentDid}`);
+  console.log(`toolName: ${artifact.receipt.toolName}`);
+}
+
 async function join() {
   try {
     const names = await readdir(RECEIPTS_DIR);
@@ -248,6 +290,7 @@ async function main() {
   if (command === "join") return join();
   if (command === "seal-latest") return sealLatestReceipt();
   if (command === "verify-latest") return verifyLatestReceipt();
+  if (command === "verify-xaip-latest") return verifyLatestXaipArtifact();
   if (command === "post") return post(args[0], args.slice(1).join(" "));
   throw new Error(`不明なコマンド: ${command}`);
 }

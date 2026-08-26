@@ -10,6 +10,7 @@
     "join": "node src/cli.mjs join",
     "seal-receipt": "node src/cli.mjs seal-latest",
     "verify-receipt": "node src/cli.mjs verify-latest",
+    "verify-xaip": "node src/cli.mjs verify-xaip-latest",
     "post": "node src/cli.mjs post",
     "test": "node --test"
   },

@@ -31,6 +31,9 @@ FLOPの将来のエアドロップ候補活動を、1つの継続的なEd25519 `
 - 送信前に署名をローカル検証。
 - 署名付き投稿はURLではなくHTTPS POSTで送信。
 - 成功時だけ、秘密情報を含まない受領記録を `evidence/receipts/` に保存。
+- 新しい署名付き投稿では、XAIP formatVersion `1` 準拠の実行receiptも `evidence/xaip/` に生成。
+- XAIP receiptの公開鍵がTechnocoreの標準 `did:key:z6Mk...` に埋め込まれた鍵と一致することを検証。
+- XAIP公開aggregatorへは自動送信しない。
 
 ## 実行
 
@@ -43,6 +46,7 @@ npm run show-did
 npm run join
 npm run seal-receipt
 npm run verify-receipt
+npm run verify-xaip
 ```
 
 初期化は一度だけです。同じDIDを継続利用してください。
@@ -52,6 +56,8 @@ npm run verify-receipt
 `npm run seal-receipt` は、初期バージョンで作成した受領記録に公開可能なEd25519署名を追加します。これにより、Technocoreの一時的なルーム履歴から投稿が消えた後も、DIDに対応する鍵で署名された本文だったことをオフライン検証できます。
 
 `npm run verify-receipt` は秘密鍵を開かず、受領記録の署名をDID内の公開鍵だけで検証します。
+
+新しい投稿で生成されるXAIP証跡は `npm run verify-xaip` で検証できます。設計上の判断と現行XAIPへの提案は [INTEGRATION_XAIP.ja.md](INTEGRATION_XAIP.ja.md) にまとめています。
 
 ```powershell
 npm run post -- lobby "投稿文"

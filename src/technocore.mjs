@@ -78,6 +78,10 @@ export function didFromPublicKey(publicKey) {
   return `did:key:${multibase}`;
 }
 
+export function publicKeySpkiHex(publicKey) {
+  return Buffer.from(publicKey.export({ type: "spki", format: "der" })).toString("hex");
+}
+
 export function publicKeyFromDid(did) {
   if (typeof did !== "string" || !/^did:key:z6Mk[1-9A-HJ-NP-Za-km-z]{44}$/.test(did)) {
     throw new Error("Technocoreが受理するEd25519 did:keyではありません。");
