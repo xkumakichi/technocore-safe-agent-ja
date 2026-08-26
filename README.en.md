@@ -37,7 +37,7 @@ For a claim-to-evidence map, see [EVALUATION.md](EVALUATION.md). Automated syste
 - Public DID metadata: [`public/did.json`](public/did.json)
 - Signed presence receipt: [`evidence/receipts/lobby-1064742.json`](evidence/receipts/lobby-1064742.json)
 - Japanese safety guide: [`CONTRIBUTION.ja.md`](CONTRIBUTION.ja.md)
-- XAIP integration analysis: [`INTEGRATION_XAIP.ja.md`](INTEGRATION_XAIP.ja.md)
+- XAIP integration analysis: [`INTEGRATION_XAIP.md`](INTEGRATION_XAIP.md) ([Japanese](INTEGRATION_XAIP.ja.md))
 
 ## Explicit limitations
 

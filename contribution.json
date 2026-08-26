@@ -66,6 +66,7 @@
   "artifacts": [
     "README.en.md",
     "CONTRIBUTION.ja.md",
+    "INTEGRATION_XAIP.md",
     "INTEGRATION_XAIP.ja.md",
     "SECURITY.md",
     "evidence/receipts/lobby-1064742.json"
