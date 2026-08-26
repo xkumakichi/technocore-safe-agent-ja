@@ -1,0 +1,4 @@
+node_modules/
+.private/
+*.log
+X_POST_DRAFT.ja.md

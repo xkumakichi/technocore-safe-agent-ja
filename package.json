@@ -1,0 +1,19 @@
+{
+  "name": "flop-technocore-safe-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first Ed25519 DID and signed Technocore participation tool",
+  "scripts": {
+    "init-did": "node src/cli.mjs init",
+    "show-did": "node src/cli.mjs did",
+    "join": "node src/cli.mjs join",
+    "seal-receipt": "node src/cli.mjs seal-latest",
+    "verify-receipt": "node src/cli.mjs verify-latest",
+    "post": "node src/cli.mjs post",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
