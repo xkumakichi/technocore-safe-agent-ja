@@ -4,13 +4,13 @@ Status: prepared; not posted by this change. Destination: X `@XAIPAgent`.
 
 ## English
 
-We’re focusing this work on FLOP. FLOP Agent Evidence now checks native Technocore signatures and flop1 references, with adapters for official TCLK and read-only FlopRail. Offline tests pass; live chain integration is still pending.
+FLOP Agent Evidence now checks native Technocore signatures and flop1 references, with optional adapters for official TCLK and read-only FlopRail. Offline tests pass; live chain integration is still pending.
 
 https://github.com/xkumakichi/technocore-safe-agent-ja
 
 ## 日本語訳
 
-この取り組みをFLOPに集中します。FLOP Agent EvidenceはTechnocore本来の署名とflop1参照を確認し、公式TCLK・読み取り専用FlopRail向けの接続機能を備えました。オフラインテストは通過しています。実チェーンとの接続検証はこれからです。
+FLOP Agent EvidenceはTechnocore本来の署名とflop1参照を確認し、公式TCLK・読み取り専用FlopRail向けの任意アダプターを備えました。オフラインテストは通過しています。実チェーンとの接続検証はこれからです。
 
 ## Evidence behind the wording
 
