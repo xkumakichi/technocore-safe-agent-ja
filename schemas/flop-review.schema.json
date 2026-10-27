@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local FLOP lock review request (not a FLOP wire message)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reference", "expectedTerms", "trust"],
+  "properties": {
+    "reference": { "type": "string", "pattern": "^flop1\\.[A-Za-z0-9_-]+$", "maxLength": 3500 },
+    "expectedTerms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "lock", "statement", "amount", "asset", "payer", "payee", "claimByMs", "refundAfterMs"],
+      "properties": {
+        "contract": { "$ref": "#/$defs/hex32" },
+        "lock": { "const": "hash" },
+        "statement": { "$ref": "#/$defs/hex32" },
+        "amount": { "type": "string", "pattern": "^[1-9][0-9]{0,38}$", "description": "Positive u128 FLOP base units; code also checks the exact u128 ceiling." },
+        "asset": { "const": "FLOP" },
+        "payer": { "$ref": "#/$defs/did" },
+        "payee": { "$ref": "#/$defs/did" },
+        "claimByMs": { "$ref": "#/$defs/ms" },
+        "refundAfterMs": { "$ref": "#/$defs/ms" }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "rpcUrl", "expectedGenesisHash", "blockTimeMs", "refundMarginBlocks"],
+      "properties": {
+        "network": { "enum": ["devnet", "testnet", "mainnet"] },
+        "rpcUrl": { "type": "string", "format": "uri", "description": "Reviewed wss endpoint without credentials, query or fragment. Never taken from the lock reference." },
+        "expectedGenesisHash": { "$ref": "#/$defs/hex32" },
+        "blockTimeMs": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "refundMarginBlocks": { "type": "integer", "minimum": 1, "maximum": 4294967295 }
+      }
+    }
+  },
+  "$defs": {
+    "hex32": { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+    "did": { "type": "string", "pattern": "^did:key:z6Mk[1-9A-HJ-NP-Za-km-z]{44}$" },
+    "ms": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+  }
+}

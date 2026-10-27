@@ -1,37 +1,28 @@
-# Evaluation guide
+# Evaluate FLOP Agent Evidence
 
-This document lets a human or automated reviewer check the project's useful claims without relying on promotional language.
-
-## Fast path
-
-```powershell
+```sh
 npm test
+npm run demo
 npm run verify-receipt
 ```
 
-No package installation is required. The project uses Node.js built-ins only.
+Node.js >=22. No install, production key or network call is needed for these checks.
 
-## Claim-to-evidence map
-
-| Claim | Evidence | Reproduction |
+| Claim | Evidence | Scope |
 | --- | --- | --- |
-| Technocore-compatible Ed25519 `did:key` generation | `src/technocore.mjs`, `public/did.json` | `npm test` |
-| Encrypted local private-key storage | `src/technocore.mjs`, `.gitignore` | `npm test` |
-| Canonical signed Technocore payloads | `src/technocore.mjs`, `test/technocore.test.mjs` | `npm test` |
-| Offline-verifiable signed presence receipt | `evidence/receipts/lobby-1064742.json` | `npm run verify-receipt` |
-| XAIP v1 receipt generation from measured actions | `src/xaip.mjs`, `test/xaip.test.mjs` | `npm test` |
-| Receipt public key bound to `did:key:z6Mk...` | `src/xaip.mjs`, tamper tests | `npm test` |
-| Portable standard `did:key` compatibility vectors | `vectors/did-key-binding-v1.json`, `test/did-key-binding-vector.test.mjs` | `npm test` |
-| Supply-chain exposure is minimized and documented | `SUPPLY_CHAIN_SECURITY.md`, `package.json`, pinned `.github/workflows/ci.yml` | inspect files; `npm test` without install |
-| Machine-readable contribution description is internally consistent | `contribution.json`, `test/contribution-manifest.test.mjs` | `npm test` |
+| Native Technocore signatures | `src/technocore.mjs`, `test/technocore.test.mjs` | Exact bytes, full DID, canonical signature, no HTTP redirects |
+| Native FLOP account binding | `src/flop.mjs`, `test/flop.test.mjs` | Ed25519 public key equals AccountId32 |
+| Native reference review | `src/flop.mjs`, `examples/flop-demo.mjs` | Terms, u128 amount, chain pin, timing, two-hash policy |
+| Export integrity checks | `src/flop.mjs`, `test/flop.test.mjs` | 19-digit nonces, tampering, invisible characters, replay and gaps |
+| Official TCLK boundary | `auditTclk` in `src/flop.mjs` | Delegates semantics upstream; optional module not bundled |
+| Official FlopRail read-only boundary | `verifyFlopLock` in `src/flop.mjs` | No signer; failure and cleanup tested with injected adapters |
+| Historical signed record still verifies | `evidence/receipts/lobby-1064742.json` | Key-control proof; server metadata is unsigned |
 
-## Security properties
+The synthetic demo reports `chainLockVerified: false` and
+`workDeliveryVerified: false`. The optional network adapter marks a lock verified
+only after official `verifyLock` returns true. Supplied tests do not establish live
+devnet interoperability, payment execution, complete room history, consensus
+verification or useful work delivery. See [design and source pins](docs/FLOP_DESIGN.md).
 
-- Passphrases are collected only through hidden local terminal input.
-- Private keys and local drafts are excluded from Git.
-- A signed action is verified locally before transmission.
-- Receipt verification fails closed on DID, key, signature, or content mismatch.
-
-## Boundaries
-
-This project makes narrow, testable claims. It does not claim that a DID identifies a legal person, that signed content is trustworthy, or that an unsigned server response is independently attested. See `SECURITY.md` and `INTEGRATION_XAIP.ja.md` for the threat model and integration limits.
+Legacy XAIP tests preserve old artifact reproducibility. They are not dependencies
+of the active FLOP workflow. `contribution.json` describes the active scope.

@@ -2,15 +2,17 @@
   "$schema": "./schemas/contribution.schema.json",
   "formatVersion": "1",
   "id": "technocore-safe-agent-ja",
-  "name": "Technocore Safe Agent — DID × XAIP",
+  "name": "FLOP Agent Evidence",
   "status": "working-prototype",
-  "summary": "Local-first Ed25519 DID tooling, Japanese safety guidance, offline-verifiable Technocore receipts, and an XAIP v1 identity-binding bridge.",
+  "summary": "Community FLOP-native evidence toolkit: exact Technocore export verification, native account and flop1 reference binding, and optional official TCLK / read-only FlopRail adapters.",
   "repository": "https://github.com/xkumakichi/technocore-safe-agent-ja",
   "license": "MIT",
   "languages": ["ja", "en"],
   "keywords": [
     "Technocore",
-    "XAIP",
+    "FLOP",
+    "TCLK",
+    "flop-htlc",
     "did:key",
     "Ed25519",
     "AI agents",
@@ -32,7 +34,7 @@
   },
   "problems": [
     "Technocore room history is ephemeral.",
-    "A portable execution receipt needs a cryptographic binding between its public key and claimed agent identity.",
+    "A signed message or internally valid escrow reference does not prove chain settlement or useful work delivery.",
     "Japanese-language participants need a local-first path that does not expose private keys or passphrases."
   ],
   "capabilities": [
@@ -47,22 +49,22 @@
       "evidence": ["src/technocore.mjs", "src/cli.mjs", "test/technocore.test.mjs"]
     },
     {
-      "id": "portable-xaip-receipts",
-      "claim": "Creates XAIP formatVersion 1 receipts from newly measured signed Technocore actions.",
-      "evidence": ["src/xaip.mjs", "test/xaip.test.mjs", "INTEGRATION_XAIP.ja.md"]
+      "id": "native-export-integrity",
+      "claim": "Checks exact Technocore export signatures, lossless 19-digit nonces, local replays and sequence gaps without executing room content.",
+      "evidence": ["src/flop.mjs", "test/flop.test.mjs", "examples/flop-demo.mjs"]
     },
     {
       "id": "self-certifying-attribution",
-      "claim": "Checks that the receipt SPKI public key matches the Ed25519 key embedded in a standard did:key:z6Mk identity.",
-      "evidence": ["src/xaip.mjs", "test/xaip.test.mjs"]
+      "claim": "Maps native Ed25519 did:key to FLOP AccountId32 without an unsigned DID-to-wallet mapping.",
+      "evidence": ["src/flop.mjs", "test/flop.test.mjs"]
     },
     {
-      "id": "portable-did-key-vectors",
-      "claim": "Publishes valid and invalid standard did:key vectors for backward-compatible XAIP attribution work.",
+      "id": "native-flop-reference-review",
+      "claim": "Checks native flop1 references against independently supplied terms, u128 amounts, genesis and timing; delegates optional protocol and chain checks to official modules.",
       "evidence": [
-        "vectors/did-key-binding-v1.json",
-        "test/did-key-binding-vector.test.mjs",
-        "docs/XAIP_DID_KEY_BINDING_PROPOSAL.md"
+        "src/flop.mjs",
+        "test/flop.test.mjs",
+        "docs/FLOP_DESIGN.md"
       ]
     },
     {
@@ -74,11 +76,14 @@
   "verification": {
     "runtime": "Node.js >=22",
     "thirdPartyRuntimeDependencies": 0,
-    "commands": ["npm test", "npm run verify-receipt"],
+    "commands": ["npm test", "npm run demo", "npm run verify-receipt"],
     "guide": "EVALUATION.md"
   },
   "artifacts": [
     "README.en.md",
+    "docs/FLOP_DESIGN.md",
+    "schemas/flop-review.schema.json",
+    "examples/flop-demo.mjs",
     "CONTRIBUTION.ja.md",
     "INTEGRATION_XAIP.md",
     "INTEGRATION_XAIP.ja.md",
@@ -91,7 +96,9 @@
   "limitations": [
     "A DID signature proves key control, not the truth or quality of content.",
     "Technocore server responses are not server-signed.",
-    "Receipts are not automatically submitted to the XAIP public aggregator.",
-    "No execution measurement is created retroactively."
+    "Optional official module adapters are interface-tested with injected implementations; live devnet integration and payments are not tested here.",
+    "Offline reference inspection does not establish that an escrow exists; online verification trusts a separately configured RPC, not a consensus light client.",
+    "No useful-work quality, complete-history or server-inclusion attestation is claimed.",
+    "Historical XAIP tooling remains available but is not in the active FLOP workflow."
   ]
 }

@@ -1,16 +1,18 @@
 {
   "name": "technocore-safe-agent-ja",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Local-first Ed25519 DID tooling and XAIP receipts for signed Technocore actions",
+  "description": "FLOP-native agent evidence: signed Technocore exports, TCLK transcripts and read-only FlopRail review",
   "repository": {
     "type": "git",
     "url": "https://github.com/xkumakichi/technocore-safe-agent-ja.git"
   },
   "keywords": [
     "technocore",
-    "xaip",
+    "flop",
+    "tclk",
+    "htlc",
     "did-key",
     "ed25519",
     "ai-agents",
@@ -25,7 +27,12 @@
     "verify-receipt": "node src/cli.mjs verify-latest",
     "verify-xaip": "node src/cli.mjs verify-xaip-latest",
     "post": "node src/cli.mjs post",
-    "test": "node --test"
+    "test": "node --test",
+    "demo": "node examples/flop-demo.mjs",
+    "audit-export": "node src/cli.mjs audit-export",
+    "inspect-flop": "node src/cli.mjs inspect-flop",
+    "audit-tclk": "node src/cli.mjs audit-tclk",
+    "verify-flop-lock": "node src/cli.mjs verify-flop-lock"
   },
   "engines": {
     "node": ">=22"

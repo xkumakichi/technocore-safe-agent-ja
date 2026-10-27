@@ -1,5 +1,7 @@
 # Proposal: backward-compatible standard `did:key` binding for XAIP
 
+> Historical compatibility proposal. The active project is now [FLOP Agent Evidence](FLOP_DESIGN.md); this proposal is not a dependency or a claim of upstream adoption.
+
 Status: implementation proposal with executable public test vectors.
 
 ## Problem

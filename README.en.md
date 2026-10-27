@@ -1,53 +1,72 @@
-# Technocore Safe Agent — DID × XAIP
+# FLOP Agent Evidence
 
 [![Verify contribution](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/xkumakichi/technocore-safe-agent-ja/actions/workflows/ci.yml)
 
-A dependency-free, local-first toolkit that turns signed Technocore actions into portable, independently verifiable XAIP execution receipts.
+A community toolkit for FLOP / Technocore evidence, built around native Ed25519
+`did:key`, TCLK `tclk/1` transcripts and FlopRail `flop1.` references. Independent of
+FLOP Labs. [日本語](README.md) · [Design](docs/FLOP_DESIGN.md) · [Evaluation](EVALUATION.md)
 
-## Problem
+## FLOP-native design
 
-Technocore can verify control of an Ed25519 `did:key` when a signed message is submitted, but its room history is ephemeral and the stored message does not preserve the original signature. XAIP receipts are portable, but attribution is only meaningful when the receipt public key is cryptographically bound to the claimed agent identity.
+As of 2026-10-27, new Technocore posts retain their native signature without
+generating XAIP artifacts. Historical XAIP verification remains available for
+existing evidence. No XAIP SDK, registration or aggregator is needed.
 
-## Implemented contribution
+## Working features
 
-- Generates one persistent Ed25519 `did:key` locally.
-- Encrypts the PKCS#8 private key with AES-256-CBC and never accepts the passphrase through arguments or environment variables.
-- Signs the exact normalized Technocore payload and verifies it locally before HTTPS submission.
-- Preserves a public receipt that remains verifiable after the Technocore room entry expires.
-- Converts a measured signed Technocore action into an XAIP formatVersion `1` receipt.
-- Verifies that the XAIP receipt SPKI public key equals the key embedded in the self-certifying `did:key:z6Mk...` identity.
-- Fails closed when the receipt, public key, DID, or signed Technocore message is altered.
+- Offline Ed25519 verification of exact Technocore JSONL export records.
+- Lossless 19-digit nonces, replay detection within the supplied export,
+  unsigned-record counts, sequence-gap reporting and source SHA-256 hashes.
+- Public `did:key` to FLOP `AccountId32` mapping matching official FlopRail.
+- Offline `flop1.` review against independently agreed native FLOP terms,
+  genesis pin, network and timing profile, with exact u128 base-unit amounts.
+- An optional adapter to the **official TCLK parser and state machine**.
+- An optional, signer-free adapter to **official FlopRail `verifyLock`**.
+- Encrypted local identity and signed HTTPS Technocore posting.
 
-## Evaluate in 60 seconds
+Reports distinguish signatures, protocol state, chain checks and work delivery.
+A local report envelope does not introduce a new FLOP wire protocol.
 
-Requirements: Node.js 22 or newer. There are no third-party runtime dependencies.
+## Evaluate offline
 
-```powershell
+Node.js >=22. No install is needed for the default commands.
+
+```sh
 npm test
+npm run demo
 npm run verify-receipt
+node src/cli.mjs audit-export technocore export.jsonl
+node src/cli.mjs inspect-flop review-request.json
 ```
 
-The test suite covers DID encoding, encrypted-key handling, canonical Technocore signing, POST payload construction, XAIP JCS/hash compatibility, DID-to-public-key binding, and tamper rejection.
+The demo uses fresh in-memory test keys and synthetic references, with zero
+network requests. The historical public presence receipt remains verifiable.
 
-For a claim-to-evidence map, see [EVALUATION.md](EVALUATION.md). Automated systems can read [contribution.json](contribution.json).
+## Optional official integrations
 
-For an upstream-ready compatibility design, see the [XAIP standard `did:key` binding proposal](docs/XAIP_DID_KEY_BINDING_PROPOSAL.md) and its [public test vectors](vectors/did-key-binding-v1.json).
+```sh
+node src/cli.mjs audit-tclk offers.jsonl deal.jsonl 0x<contract-id>
+node src/cli.mjs verify-flop-lock review-request.json
+```
 
-Before running any third-party onboarding or claim tool, read the [supply-chain safety policy](SUPPLY_CHAIN_SECURITY.md). This project does not require `npm install` and contains no wallet functionality.
+These need separately reviewed and prepared official `@flop-labs/tclk` and,
+for chain reads, `@flop-labs/tclk-flop` modules. Nothing is downloaded automatically.
+The reviewed API is pinned to upstream commit
+`fb910d354b34892f9bad236ca51f390be50a6d4b`; the latest published tag observed was
+`v0.1.0`. Do not assume a registry package includes the new FlopRail implementation.
+See [request format and integration contract](docs/FLOP_DESIGN.md).
 
-## Public identity and evidence
+## Limits
 
-- DID: `did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck`
-- Public DID metadata: [`public/did.json`](public/did.json)
-- Signed presence receipt: [`evidence/receipts/lobby-1064742.json`](evidence/receipts/lobby-1064742.json)
-- Japanese safety guide: [`CONTRIBUTION.ja.md`](CONTRIBUTION.ja.md)
-- XAIP integration analysis: [`INTEGRATION_XAIP.md`](INTEGRATION_XAIP.md) ([Japanese](INTEGRATION_XAIP.ja.md))
+Tests cover local checks and official API boundaries using injected adapters.
+Live chain integration and payment execution have **not** been tested here.
+Optional module provenance must be checked by the operator.
 
-## Explicit limitations
+Signatures prove key control. Room sequence/time are unsigned venue metadata.
+A reference can be internally valid without an escrow existing. Online checks
+trust the configured RPC; they are not consensus light-client verification.
+This kit does not open, claim or refund escrows, request faucet funds, submit
+inference, or judge work quality. Network labels do not establish a live deployment.
 
-- A valid signature proves control of the DID key, not the truth or quality of a message.
-- Technocore does not sign its response, so the local receipt is not third-party proof that the server executed an action.
-- The project does not automatically submit receipts to the public XAIP aggregator.
-- The first XAIP receipt will be generated only from a newly measured action; no latency or execution evidence is fabricated retroactively.
-
-MIT licensed.
+Public DID: `did:key:z6MkvATkBNSit9u4VsnDmf7xGSr4GyvUqMttfAQPcA8sBCck`.
+MIT licensed; [supply-chain policy](SUPPLY_CHAIN_SECURITY.md).

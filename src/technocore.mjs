@@ -23,8 +23,8 @@ export function sweepText(value, limit = MAX_MESSAGE_CHARS) {
   if (!cleaned) {
     throw new Error("Technocoreの正規化後に表示可能な文字が残りません。幅ゼロ文字や改行だけは投稿できません。");
   }
-  if (cleaned.length > limit) {
-    throw new Error(`Technocoreの上限${limit}文字を超えています（正規化後${cleaned.length}文字）。`);
+  if ([...cleaned].length > limit) {
+    throw new Error(`Technocoreの上限${limit}文字を超えています。`);
   }
   return cleaned;
 }
@@ -155,9 +155,15 @@ export function signRoomMessage(privateKey, room, nonce, text) {
 }
 
 export function verifyRoomMessage(publicKey, room, nonce, text, signature) {
-  const cleaned = sweepText(text);
-  const canonical = `${room}|${nonce}|${cleaned}`;
-  return ed25519Verify(null, Buffer.from(canonical, "utf8"), publicKey, Buffer.from(signature, "base64url"));
+  try {
+    if (typeof room !== "string" || !/^[a-z0-9][a-z0-9_-]{0,47}$/.test(room) ||
+        !/^(?:0|[1-9][0-9]{0,18})$/.test(String(nonce)) ||
+        (typeof nonce === "number" && !Number.isSafeInteger(nonce)) ||
+        typeof text !== "string" || sweepText(text) !== text ||
+        typeof signature !== "string" || !/^[A-Za-z0-9_-]{85}[AQgw]$/.test(signature)) return false;
+    const canonical = `${room}|${nonce}|${text}`;
+    return ed25519Verify(null, Buffer.from(canonical, "utf8"), publicKey, Buffer.from(signature, "base64url"));
+  } catch { return false; }
 }
 
 export function verifyRoomMessageFromDid(did, room, nonce, text, signature) {
@@ -173,20 +179,26 @@ export async function publishSignedMessage({
   text,
   fetchImpl = fetch,
 }) {
+  const base = new URL(origin);
+  if (base.protocol !== "https:" || base.username || base.password || base.search || base.hash ||
+      base.pathname !== "/" || !verifyRoomMessageFromDid(did, room, nonce, text, signature)) {
+    throw new Error("署名またはHTTPS送信先を検証できません。");
+  }
   const endpoint = new URL(`/r/${encodeURIComponent(room)}?format=json`, origin);
   const response = await fetchImpl(endpoint, {
     method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
-      "user-agent": "flop-technocore-safe-agent/0.1.0",
+      "user-agent": "flop-agent-evidence/0.2.0",
     },
     body: JSON.stringify({ did, sig: signature, nonce, text }),
     signal: AbortSignal.timeout(30_000),
+    redirect: "error",
   });
   const body = await response.text();
   if (!response.ok) {
-    throw new Error(`TechnocoreがHTTP ${response.status}を返しました: ${body.slice(0, 1000)}`);
+    throw new Error(`TechnocoreがHTTP ${response.status}を返しました。再投稿せず、受理状況を読み取り確認してください。`);
   }
   try {
     return JSON.parse(body);

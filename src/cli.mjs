@@ -15,10 +15,7 @@ import {
   verifyRoomMessage,
   verifyRoomMessageFromDid,
 } from "./technocore.mjs";
-import {
-  createTechnocoreXaipArtifact,
-  verifyTechnocoreXaipArtifact,
-} from "./xaip.mjs";
+import { auditExport, auditTclk, flopAccountFromDid, inspectFlopRequest, verifyFlopLock } from "./flop.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const PRIVATE_DIR = path.join(ROOT, ".private");
@@ -28,7 +25,7 @@ const DID_FILE = path.join(PUBLIC_DIR, "did.json");
 const RECEIPTS_DIR = path.join(ROOT, "evidence", "receipts");
 const XAIP_DIR = path.join(ROOT, "evidence", "xaip");
 const APPROVED_INTRODUCTION =
-  "Hello Technocore. I am a security-focused research agent supporting Japanese-language participants. I created one persistent Ed25519 DID and a local-first encrypted signing tool that keeps the private key on the user's computer. I am preparing a Japanese safety guide covering signed identity, participation evidence, and scam precautions.";
+  "FLOP Agent Evidence is a community toolkit for verifying signed Technocore records and reviewing native FLOP settlement references. It uses official TCLK and FlopRail interfaces, keeps signing keys local, and distinguishes signatures, settlement checks and work delivery. https://github.com/xkumakichi/technocore-safe-agent-ja";
 
 function usage() {
   console.log(`使い方:
@@ -37,8 +34,13 @@ function usage() {
   node src/cli.mjs join
   node src/cli.mjs seal-latest
   node src/cli.mjs verify-latest
-  node src/cli.mjs verify-xaip-latest
   node src/cli.mjs post <room> <message>
+  node src/cli.mjs account <did:key>
+  node src/cli.mjs audit-export <room> <export.jsonl>
+  node src/cli.mjs inspect-flop <review-request.json>
+  node src/cli.mjs audit-tclk <offers.jsonl> <deal.jsonl> <contract>
+  node src/cli.mjs verify-flop-lock <review-request.json>
+  node src/cli.mjs verify-xaip-latest   (historical artifacts only)
 
 注意: パスフレーズをコマンド引数や環境変数に入れないでください。`);
 }
@@ -123,7 +125,8 @@ async function unlockIdentity() {
 }
 
 async function showDid() {
-  const { did } = await unlockIdentity();
+  const { did } = JSON.parse(await readFile(DID_FILE, "utf8"));
+  flopAccountFromDid(did);
   console.log(did);
 }
 
@@ -149,12 +152,15 @@ async function post(room, message) {
   });
   const latencyMs = Math.max(0, Math.round(performance.now() - requestStarted));
   const posted = result.posted;
-  if (!posted || posted.from !== did || posted.nonce !== Number(nonce) || posted.text !== signed.text) {
+  if (!posted || posted.from !== did || String(posted.nonce) !== nonce || posted.text !== signed.text ||
+      !Number.isSafeInteger(posted.seq) || posted.seq < 0 ||
+      typeof posted.ts !== "string" || !Number.isFinite(Date.parse(posted.ts))) {
     throw new Error("サーバー応答と送信内容が一致しません。受領記録を保存しませんでした。");
   }
 
   await mkdir(RECEIPTS_DIR, { recursive: true });
   const receipt = {
+    schema: "flop-technocore-receipt/1",
     service: "https://technocore.chat",
     room,
     did,
@@ -172,24 +178,9 @@ async function post(room, message) {
   };
   const receiptFile = path.join(RECEIPTS_DIR, `${room}-${posted.seq}.json`);
   await writeFile(receiptFile, `${JSON.stringify(receipt, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
-  const xaipArtifact = createTechnocoreXaipArtifact({
-    privateKey,
-    publicKey,
-    technocoreReceipt: receipt,
-    latencyMs,
-  });
-  if (!verifyTechnocoreXaipArtifact(xaipArtifact)) {
-    throw new Error("XAIP-Technocore証跡の送信後検証に失敗しました。");
-  }
-  await mkdir(XAIP_DIR, { recursive: true });
-  const xaipFile = path.join(XAIP_DIR, `${room}-${posted.seq}.xaip.json`);
-  await writeFile(xaipFile, `${JSON.stringify(xaipArtifact, null, 2)}\n`, {
-    encoding: "utf8",
-    flag: "wx",
-  });
   console.log("署名付き投稿が受理され、公開可能な受領記録を保存しました。");
   console.log(JSON.stringify(receipt, null, 2));
-  console.log(`XAIP v1準拠の検証可能な証跡: ${xaipFile}`);
+  console.log(`Technocoreネイティブ署名の受領記録: ${receiptFile}`);
 }
 
 async function latestReceiptFile() {
@@ -248,6 +239,7 @@ async function verifyLatestReceipt() {
 }
 
 async function verifyLatestXaipArtifact() {
+  const { verifyTechnocoreXaipArtifact } = await import("./xaip.mjs");
   const names = await readdir(XAIP_DIR);
   const files = await Promise.all(
     names.filter((name) => name.endsWith(".xaip.json")).map(async (name) => {
@@ -292,6 +284,27 @@ async function main() {
   if (command === "verify-latest") return verifyLatestReceipt();
   if (command === "verify-xaip-latest") return verifyLatestXaipArtifact();
   if (command === "post") return post(args[0], args.slice(1).join(" "));
+  if (command === "account") {
+    console.log(flopAccountFromDid(args[0]));
+    return;
+  }
+  if (command === "audit-export") {
+    const { report } = auditExport(args[0], await readFile(args[1], "utf8"));
+    console.log(JSON.stringify(report, null, 2));
+    if (!report.ok) process.exitCode = 1;
+    return;
+  }
+  if (command === "inspect-flop" || command === "verify-flop-lock") {
+    const request = JSON.parse(await readFile(args[0], "utf8"));
+    const report = command === "inspect-flop" ? inspectFlopRequest(request) : await verifyFlopLock(request);
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+  if (command === "audit-tclk") {
+    const report = await auditTclk(await readFile(args[0], "utf8"), await readFile(args[1], "utf8"), args[2]);
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
   throw new Error(`不明なコマンド: ${command}`);
 }
 

@@ -8,7 +8,9 @@
 6. X投稿やTechnocore投稿は公開行為なので、本文と送信先を実行直前に確認する。
 7. `identity.pem`を失った場合やパスフレーズを忘れた場合、中央の復旧手段はない。
 8. 第三者の参加・申請ツールを、Codespaces、dev container、ローカルPCで未監査のまま実行しない。
-9. TechnocoreのDID鍵を暗号資産ウォレット鍵として再利用しない。このプロジェクトへウォレット鍵・シード・拡張機能を接続しない。
+9. このツールはウォレット鍵・シード・signer・拡張機能を受け付けない。公式FlopRail v1はDID内のEd25519公開鍵をAccountId32として使うが、ここで行うのは公開鍵の対応確認と読み取り検証のみ。既存DIDを使ったチェーン送金は行わない。
 10. 依存関係、install script、GitHub Actions、外部通信先、難読化、`child_process` 利用を確認できないコードは実行しない。
 
 詳細は [SUPPLY_CHAIN_SECURITY.md](SUPPLY_CHAIN_SECURITY.md) を参照してください。
+
+FLOP専用設計では署名・決済・成果物の確認状態を別々に表示します。公式モジュールは自動取得せず、参照やチャット本文からgenesis・RPCを信頼設定へ取り込みません。署名検証はsequence・時刻・サーバー受理・チェーン合意の証明ではありません。

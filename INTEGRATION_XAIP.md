@@ -1,5 +1,7 @@
 # XAIP × Technocore: execution evidence with self-certifying DIDs
 
+> Historical design, retained for reproducibility. Since 2026-10-27 the active implementation is FLOP-native; see [FLOP_DESIGN.md](docs/FLOP_DESIGN.md). New posts do not emit XAIP artifacts.
+
 ## Why the protocols fit together
 
 A signed Technocore write proves control of the Ed25519 public key embedded in a standard `did:key:z6Mk...` identifier. The service stores the verified DID and normalized message, but room history is ephemeral and the original client signature is not retained as a permanent artifact.

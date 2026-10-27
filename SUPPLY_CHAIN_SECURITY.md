@@ -4,10 +4,11 @@
 
 This repository is intentionally narrow:
 
-- no third-party runtime dependencies;
-- no `npm install` step is required;
+- no third-party dependencies in the default offline/signing workflow;
+- no `npm install` step is required for that workflow;
+- official TCLK / FlopRail adapters are optional, separately reviewed local modules; no automatic fetching;
 - no wallet connection, wallet signing, seed phrase, or wallet private-key functionality;
-- the Technocore DID key is separate from every financial key;
+- the official FLOP account mapping uses the DID public key; this tool never uses that key to sign a financial operation;
 - the encrypted DID private key stays in `.private/identity.pem`, outside Git;
 - GitHub Actions dependencies are pinned to full commit SHAs.
 
@@ -36,7 +37,7 @@ Static review reduces risk but is not a guarantee of safety. This project does n
 
 - 未検証の参加・申請・配布スクリプトを、Codespacesだから安全だと考えて実行しない。
 - DID秘密鍵、ウォレット秘密鍵、シード、パスフレーズを第三者ツールへ入力・アップロードしない。
-- DID鍵とウォレット鍵を必ず分離する。
+- このツールのDID署名用途を金融操作へ広げない。公式FlopRailの公開鍵対応を確認しても、ウォレット鍵・signerは接続しない。
 - 調査は最初に固定コミットの静的確認だけで行い、実行が必要なら秘密情報を一切持たない使い捨て環境を使う。
 - 悪質だと断定する場合は、再現可能なコード上の証拠を必要とする。
 
